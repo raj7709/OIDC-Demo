@@ -34,6 +34,7 @@ jobs:
             // Get the OIDC token
             const token = await core.getIDToken('sts.amazonaws.com');
             const fs = require('fs');
+            const path = require('path');
             
             console.log('==========================================');
             console.log('JWT Token Structure:');
@@ -73,9 +74,17 @@ jobs:
                 const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
                 console.log(JSON.stringify(payload, null, 2));
                 
-                // Save to file
-                fs.writeFileSync('jwt-token.txt', token);
-                fs.writeFileSync('jwt-payload.json', JSON.stringify(payload, null, 2));
+                // Save to files in current working directory
+                const tokenFile = path.join(process.cwd(), 'jwt-token.txt');
+                const payloadFile = path.join(process.cwd(), 'jwt-payload.json');
+                
+                fs.writeFileSync(tokenFile, token);
+                fs.writeFileSync(payloadFile, JSON.stringify(payload, null, 2));
+                
+                console.log('');
+                console.log('Files created:');
+                console.log('- ' + tokenFile);
+                console.log('- ' + payloadFile);
               } catch (e) {
                 console.log('Error decoding payload:', e.message);
               }
@@ -89,8 +98,9 @@ jobs:
         with:
           name: jwt-token-files
           path: |
-            jwt-token.txt
-            jwt-payload.json
+            ${{ github.workspace }}/jwt-token.txt
+            ${{ github.workspace }}/jwt-payload.json
+          if-no-files-found: warn
 
 
       - name: Upload demo file to S3
