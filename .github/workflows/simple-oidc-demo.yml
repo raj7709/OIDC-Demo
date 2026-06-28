@@ -33,6 +33,7 @@ jobs:
           script: |
             // Get the OIDC token
             const token = await core.getIDToken('sts.amazonaws.com');
+            const fs = require('fs');
             
             console.log('==========================================');
             console.log('JWT Token Structure:');
@@ -43,7 +44,7 @@ jobs:
             // Split token into parts
             const parts = token.split('.');
             
-            console.log('COMPLETE TOKEN (Copy this to jwt.io):');
+            console.log('COMPLETE TOKEN (3 parts separated by dots):');
             console.log(token);
             console.log('');
             
@@ -71,18 +72,25 @@ jobs:
               try {
                 const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
                 console.log(JSON.stringify(payload, null, 2));
+                
+                // Save to file
+                fs.writeFileSync('jwt-token.txt', token);
+                fs.writeFileSync('jwt-payload.json', JSON.stringify(payload, null, 2));
               } catch (e) {
                 console.log('Error decoding payload:', e.message);
               }
             } else {
-              console.log('Invalid JWT format');
+              console.log('Invalid JWT format - Expected 3 parts, got ' + parts.length);
             }
-            
-            // Save to artifact for easy download
-            const fs = require('fs');
-            fs.writeFileSync('jwt-token.txt', `Complete JWT Token:\n${token}\n\nPayload:\n${JSON.stringify(JSON.parse(Buffer.from(parts[1], 'base64').toString()), null, 2)}`);
-            console.log('');
-            console.log('Token also saved to jwt-token.txt artifact');
+
+      - name: Upload JWT Token as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-token-files
+          path: |
+            jwt-token.txt
+            jwt-payload.json
 
 
       - name: Upload demo file to S3
