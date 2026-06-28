@@ -27,6 +27,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Display JWT Token (Educational Demo)
+        run: |
+          TOKEN=$(curl -s "$ACTIONS_ID_TOKEN_REQUEST_URL?audience=sts.amazonaws.com" \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" | jq -r '.token')
+          
+          echo "=========================================="
+          echo "JWT Token Structure:"
+          echo "=========================================="
+          echo "Header.Payload.Signature"
+          echo ""
+          echo "Full Token:"
+          echo "$TOKEN"
+          echo ""
+          echo "=========================================="
+          echo "Decoded Payload (Claims):"
+          echo "=========================================="
+          echo "$TOKEN" | cut -d. -f2 | base64 -d | jq '.'
+
       - name: Upload demo file to S3
         run: |
           echo "Hello from GitHub OIDC demo" > oidc-demo.txt
