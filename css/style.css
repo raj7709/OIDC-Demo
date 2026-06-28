@@ -1,0 +1,109 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+header {
+  text-align: center;
+  padding: 40px 20px;
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.4rem;
+}
+
+header p {
+  margin: 12px auto 0;
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+main {
+  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+section {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.hero p,
+.example p,
+.why p {
+  line-height: 1.7;
+}
+
+.info-box {
+  background: #e0f2fe;
+  border-left: 4px solid #2563eb;
+  padding: 18px 20px;
+  margin-top: 18px;
+  border-radius: 12px;
+}
+
+.note {
+  background: #f8fafc;
+  border-left: 4px solid #2563eb;
+  padding: 14px 18px;
+  margin-top: 16px;
+  border-radius: 12px;
+  color: #1e293b;
+}
+
+.steps {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  padding: 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 18px;
+  overflow-x: auto;
+  border-radius: 14px;
+  margin: 16px 0;
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+footer {
+  text-align: center;
+  padding: 18px 20px;
+  color: #475569;
+}
+
+
+

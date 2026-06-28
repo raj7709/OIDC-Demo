@@ -1,0 +1,36 @@
+name: Simple OIDC Demo
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS using GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload demo file to S3
+        run: |
+          echo "Hello from GitHub OIDC demo" > oidc-demo.txt
+          aws s3 cp oidc-demo.txt s3://${S3_BUCKET}/oidc-demo.txt
+
+      - name: List S3 bucket contents
+        run: aws s3 ls s3://${S3_BUCKET}/

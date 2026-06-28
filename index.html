@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GitHub OIDC Learning Demo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>GitHub OIDC Learning Demo</h1>
+    <p>Focus on the key idea: GitHub proves its identity with a temporary token instead of stored secrets.</p>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h2>What is OIDC?</h2>
+      <p>OpenID Connect (OIDC) is a way for an app or workflow to ask a trusted provider for proof of identity. In this demo, GitHub is the identity provider.</p>
+      <div class="info-box">
+        <strong>Simple idea:</strong> GitHub Actions can request a short-lived token and use it to access a cloud resource without saving passwords or API keys in the repo.
+      </div>
+    </section>
+
+    <section class="steps">
+      <h2>Simple workflow steps</h2>
+      <div class="card">
+        <h3>Step 1</h3>
+        <p>GitHub Actions starts when code is pushed or a workflow is triggered.</p>
+      </div>
+      <div class="card">
+        <h3>Step 2</h3>
+        <p>GitHub issues a temporary OIDC token for this workflow run.</p>
+      </div>
+      <div class="card">
+        <h3>Step 3</h3>
+        <p>The workflow uses that token to assume a cloud role, such as an AWS role, without a stored secret.</p>
+      </div>
+    </section>
+
+    <section class="example">
+      <h2>Best minimal example</h2>
+      <p>This is the part students should read first. It shows the OIDC flow in the simplest form.</p>
+      <p>The sample workflow uploads a small demo file to S3 and then lists the bucket contents. This keeps the example concrete and easy to follow.</p>
+      <pre><code>name: Simple OIDC Demo
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload demo file to S3
+        run: |
+          echo "Hello from GitHub OIDC demo" > oidc-demo.txt
+          aws s3 cp oidc-demo.txt s3://${S3_BUCKET}/oidc-demo.txt
+
+      - name: List S3 bucket contents
+        run: aws s3 ls s3://${S3_BUCKET}/
+</code></pre>
+      <p>The workflow above shows the core OIDC concept: GitHub sends a token, the workflow uses that token for AWS access, and no permanent secret is stored in the repository.</p>
+      <p class="note">See the simple example file at <strong>.github/workflows/simple-oidc-demo.yml</strong>. Set <strong>AWS_ROLE_ARN</strong> and <strong>AWS_S3_BUCKET</strong> in GitHub Secrets. The AWS role should allow S3 PutObject and ListBucket.</p>
+    </section>
+
+    <section class="why">
+      <h2>Why this is the best demo for OAuth/OIDC</h2>
+      <ul>
+        <li>✅ It keeps the focus on identity, not on build or deploy details.</li>
+        <li>✅ It shows how GitHub Actions can be secretless.</li>
+        <li>✅ It is easy to explain: GitHub proves who it is, then cloud trust is granted for one run.</li>
+      </ul>
+      <p>Later, you can add build and deploy steps. For now, make sure students understand the basic sequence: <strong>GitHub -> OIDC token -> cloud role</strong>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Use this page to explain the token flow first. Add deployment details only after the students understand OIDC.</p>
+  </footer>
+</body>
+</html>
+
